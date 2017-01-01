@@ -4,12 +4,10 @@ stages:
 deploy_prod:
   stage: deploy
   script:
-    - echo "Deploy to production server"
-    - cd /var/docker
-    - git pull
-    - docker-compose down
-    - docker-compose build
-    - docker-compose up
+    - rm -rf /var/docker/vhosts
+    - mv $CI_PROJECT_DIR /var/docker/vhosts
+    - cd /var/docker/vhosts
+    - docker-compose down && docker-compose build && docker-compose up
   environment:
     name: production
     url: https://www.gpcentre.net/
