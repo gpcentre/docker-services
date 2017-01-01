@@ -5,9 +5,13 @@ deploy_prod:
   stage: deploy
   script:
     - echo "Deploy to production server"
+    - cd /var/docker
+    - git pull
+    - docker-compose down
+    - docker-compose build
+    - docker-compose up
   environment:
     name: production
-    url: https://example.com
+    url: https://www.gpcentre.net/
   only:
   - master
-
