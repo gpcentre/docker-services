@@ -10,7 +10,7 @@ deploy_prod:
     - rm -rf .git*
     - echo "ENV=production" >> .env
     - echo "VAR_ROOT=/var" >> .env
-    - docker-compose down && docker-compose up
+    - docker-compose down && docker-compose up -d
   environment:
     name: production
     url: https://www.gpcentre.net/
