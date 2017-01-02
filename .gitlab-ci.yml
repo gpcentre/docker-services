@@ -9,7 +9,7 @@ before_script:
   - echo "VAR_ROOT=/var" >> .env
   - echo "COMPOSE_PROJECT_NAME=gpcentre" >> .env
 
-deploy:docker:
+deploy:services:
   stage: deploy
   # variables:
   #   CI_DEBUG_TRACE: "true"
@@ -18,7 +18,5 @@ deploy:docker:
     - cp -R "$CI_PROJECT_DIR" "$DEPLOY_PATH"
     - cd "$DEPLOY_PATH"
     - docker-compose up -d
+    - rm -rf .git*
 
-after_script:
-  - cd "$DEPLOY_PATH"
-  - rm -rf .git*
