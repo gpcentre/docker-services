@@ -6,7 +6,6 @@ deploy_prod:
   script:
     - rm -rf /var/docker/gpcentre-base
     - mkdir /var/docker/gpcentre-base
-    - echo "Directory: $CI_PROJECT_DIR"
     - cp -R $CI_PROJECT_DIR/* /var/docker/gpcentre-base
     - cd /var/docker/gpcentre-base
     - rm -rf .git*
