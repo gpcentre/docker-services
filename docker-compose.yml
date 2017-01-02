@@ -1,35 +1,32 @@
 version: '2'
 services:
-  vhosts:
-    #build: ./vhosts
-    image: nginx:latest
-    container_name: vhosts
-    environment:
-      WORKDIR: /etc/nginx
+  proxy: 
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
     ports:
       - "80:80"
       - "443:443"
-    links:
-       - php71:phpfcgi
+    # networks:
+    #   - front-tier
     volumes:
-      - ./var/www:/var/www
-      - ./etc/nginx/conf.d:/etc/nginx/conf.d
-      - ./var/lib/php-fpm:/var/lib/php-fpm
+      - /var/run/docker.sock:/tmp/docker.sock:ro 
   php71:
-    #build: ./php71
     image: php:fpm
     container_name: php71
     environment:
       WORKDIR: /usr/local/etc
-    ports:
-      - "9000:9000"
-#    links:
-#      - mysql:gpc.database
+    # networks:
+    #   - front-tier
+    #   - back-tier
+    # ports:
+    #   - "9000:9000"
+  #    links:
+  #      - mysql:gpc.database
     volumes:
       - ./etc/php-fpm/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./etc/php-fpm/conf.d/zz-docker.ini:/usr/local/etc/php/conf.d/zz-docker.ini
-      - ./var/www:/var/www
-      - ./var/lib/php-fpm:/var/lib/php-fpm
+      - $VAR_ROOT/www:/var/www
+      - $VAR_ROOT/lib/php-fpm:/var/lib/php-fpm
   # mysql:
   #   image: mysql:latest
   #   container_name: mysql
@@ -41,3 +38,25 @@ services:
   #     - ./var/lib/mysql:/var/lib/mysql
   #     - ./etc/mysql/conf.d:/etc/mysql/conf.d
   #     - ./etc/mysql/init.db:/docker-entrypoint-initdb.d
+# networks:
+#   default:
+#     driver: bridge
+  # back-tier:
+  #   driver: bridge
+  # gpcentre-net:
+  #   image: nginx:latest
+  #   container_name: gpcentre-net
+  #   environment:
+  #     WORKDIR: /etc/nginx
+  #     VIRTUAL_HOST: localhost,*.gpcentre.net
+  #   ports:
+  #     - "1080:80"
+  #     - "1443:443"
+  #   links:
+  #      - php71:phpfcgi
+  #      - nginx-proxy
+  #   volumes:
+  #     - ./gpcentre-net/src:/var/www/gpcentre-net
+  #     - ./gpcentre-net/nginx/conf.d:/etc/nginx/conf.d
+  #     - ./gpcentre-net/var/lib/php-fpm:/var/lib/php-fpm
+  #     - /var/run/docker.sock:/tmp/docker.sock:ro 
