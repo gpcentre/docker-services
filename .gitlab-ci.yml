@@ -5,6 +5,7 @@ deploy_prod:
   stage: deploy
   script:
     - rm -rf /var/docker/gpcentre-base
+    - mkdir /var/docker/gpcentre-base
     - cp -R $CI_PROJECT_DIR /var/docker/gpcentre-base
     - cd /var/docker/gpcentre-base
     - rm -rf .git*
