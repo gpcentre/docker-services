@@ -2,28 +2,76 @@ version: '2'
 services:
   proxy: 
     image: jwilder/nginx-proxy
-    container_name: nginx-proxy
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro 
   php71:
-    image: php:fpm
-    container_name: php71
+    image: gpcentre/php71
+    links:
+      - mariadb-node1:mariadb
     volumes:
       - ./etc/php-fpm/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./etc/php-fpm/conf.d/zz-docker.ini:/usr/local/etc/php/conf.d/zz-docker.ini
       - "$VAR_ROOT/www:/var/www"
       - "$VAR_ROOT/lib/php-fpm:/var/lib/php-fpm"
-  # mysql:
-  #   image: mysql:latest
-  #   container_name: mysql
-  #   ports:
-  #     - "3306:3306"
+  # mariadb:
+  #   image: mariadb:latest
   #   environment:
   #     MYSQL_ROOT_PASSWORD: password
   #   volumes:
-  #     - ./var/lib/mysql:/var/lib/mysql
-  #     - ./etc/mysql/conf.d:/etc/mysql/conf.d
-  #     - ./etc/mysql/init.db:/docker-entrypoint-initdb.d
+  #     - "$VAR_ROOT/lib/mysql:/var/lib/mysql"
+      # - ./etc/mysql/conf.d:/etc/mysql/conf.d
+  # Success! Discovered from: https://gist.github.com/lucidfrontier45/497341c4b848dfbd6dfb
+  mariadb-node1:
+    image: hauptmedia/mariadb:10.1
+    hostname: mariadb-node1
+    ports:
+      - 13306:3306
+    environment:
+      - TIMEZONE=America\Los_Angeles
+      - MYSQL_ROOT_PASSWORD=password
+      - REPLICATION_PASSWORD=repli
+      - MYSQL_DATABASE=maria
+      - MYSQL_USER=maria
+      - MYSQL_PASSWORD=test
+      - GALERA=On
+      - NODE_NAME=mariadb-node1
+      - CLUSTER_NAME=maria_cluster
+      - CLUSTER_ADDRESS=gcomm://
+    # command: --wsrep-new-cluster
+    volumes:
+      - "$VAR_ROOT/lib/mysql-node1:/var/lib/mysql"
+  mariadb-node2:
+    image: hauptmedia/mariadb:10.1
+    hostname: mariadb-node2
+    links:
+      - mariadb-node1
+    ports:
+      - 23306:3306
+    environment:
+      - TIMEZONE=America\Los_Angeles
+      - REPLICATION_PASSWORD=repli
+      - GALERA=On
+      - NODE_NAME=node2
+      - CLUSTER_NAME=maria_cluster
+      - CLUSTER_ADDRESS=gcomm://mariadb-node1
+    volumes:
+      - "$VAR_ROOT/lib/mysql-node2:/var/lib/mysql"
+  mariadb-node3:
+    image: hauptmedia/mariadb:10.1
+    hostname: mariadb-node3
+    links:
+      - mariadb-node1
+    ports:
+      - 33306:3306
+    environment:
+      - TIMEZONE=America\Los_Angeles
+      - REPLICATION_PASSWORD=repli
+      - GALERA=On
+      - NODE_NAME=node3
+      - CLUSTER_NAME=maria_cluster
+      - CLUSTER_ADDRESS=gcomm://mariadb-node1
+    volumes:
+      - "$VAR_ROOT/lib/mysql-node3:/var/lib/mysql"
