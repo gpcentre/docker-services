@@ -7,15 +7,6 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro 
-  php71:
-    image: gpcentre/php71-fpm 
-    links:
-      - mariadb-node1:mariadb
-    volumes:
-      - ./etc/php-fpm/php-fpm.d/zz-docker.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
-      - ./etc/php-fpm/conf.d/zz-docker.ini:/usr/local/etc/php/conf.d/zz-docker.ini
-      - "$VAR_ROOT/www:/var/www"
-      - "$VAR_ROOT/lib/php-fpm:/var/lib/php-fpm"
   # mariadb:
   #   image: mariadb:latest
   #   environment:
