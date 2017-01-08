@@ -6,6 +6,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./etc/nginx/conf.d/max_upload.conf:/etc/nginx/conf.d/max_upload.conf:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro 
   # mariadb:
   #   image: mariadb:latest
