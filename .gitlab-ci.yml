@@ -9,6 +9,7 @@ before_script:
   - echo APPLICATION_ENV=production > .env
   - echo COMPOSE_PROJECT_NAME=gpcentre >> .env
   - echo NGINX_FILES_PATH=$DEPLOY_PATH/nginx >> .env
+  - echo VAR_ROOT=$DEPLOY_PATH >> .env
 
 deploy:services:
   stage: deploy
